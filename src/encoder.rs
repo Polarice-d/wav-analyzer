@@ -1,11 +1,51 @@
-use hound::{WavSpec, WavWriter, SampleFormat};
+use std::{i8, i16, i32, path::PathBuf};
 
-pub fn encode_file(samples:Vec<f32>, spec:WavSpec, filename:String) {
-    let mut writer = hound::WavWriter::create(filename, spec).unwrap();
-    for sample in samples.iter() {
-        writer.write_sample(*sample).unwrap();
+use hound::{WavWriter, SampleFormat};
+use crate::types::AudioBuffer;
+
+pub fn encode_file(buffer:AudioBuffer, filename:PathBuf) {
+    let mut count: i64 = 0;
+    let mut writer = WavWriter::create(filename, buffer.original_spec).unwrap();
+    for sample in buffer.normalized_samples.iter() {
+        if sample.abs() > 1.0  {
+            count += 1;
+        }
     }
-    
+
+    match buffer.original_spec.bits_per_sample {
+       8 =>  {
+        let amplitude = i8::MAX as f32;
+        for sample in buffer.normalized_samples {
+            writer.write_sample((sample * amplitude) as i8).unwrap();
+        }
+       }
+       16 => {
+        let amplitude = i16::MAX as f32;
+        for sample in buffer.normalized_samples {
+            writer.write_sample((sample * amplitude) as i16).unwrap();
+        }
+       },
+       32 => {
+        if buffer.original_spec.sample_format == SampleFormat::Int {
+            let amplitude = i32::MAX as f32;
+            for sample in buffer.normalized_samples {
+                writer.write_sample((sample * amplitude) as i32).unwrap()
+            }
+        } else {
+            for sample in buffer.normalized_samples {
+                writer.write_sample(sample).unwrap()
+            }
+        }
+       }
+       _ => {
+            panic!("cannot encode unsupported format")
+       }
+    }
+
     writer.finalize().unwrap();
+
+    if count > 0 {
+        println!("Warning, audio may be distorted! Counted {} samples that exceeded the maximum amplitude. Consider decreasing the gain or normalizing the audio", count);
+    }
 }
 
