@@ -33,7 +33,7 @@ pub fn delay(audio_buffer:&mut AudioBuffer, arguments: &HashMap<String,Option<St
     }
 
     let sample_rate = audio_buffer.original_spec.sample_rate as i32;
-    let ringbuffer_size = ((time as f32 / 1000.0) * sample_rate as f32 * 2.0) as usize;
+    let ringbuffer_size = ((time as f32 / 1000.0) * sample_rate as f32 * audio_buffer.original_spec.channels as f32) as usize;
     let mut buffer: AllocRingBuffer<f32> = AllocRingBuffer::new(ringbuffer_size);
 
     buffer.enqueue(0.0);
@@ -47,7 +47,7 @@ pub fn delay(audio_buffer:&mut AudioBuffer, arguments: &HashMap<String,Option<St
     let normalizing_factor: f32 = (1.0/(ringbuffer_size as f32)).sqrt();
 
     if tail_length.is_some() {
-        let tail_samples = 2 * (tail_length.unwrap() * sample_rate as f32) as i32;
+        let tail_samples = audio_buffer.original_spec.channels as i32 * (tail_length.unwrap() * sample_rate as f32) as i32;
         for _ in 0 .. tail_samples {
             buffer.enqueue(buffer.front().unwrap() * feedback);
             audio_buffer.normalized_samples.push(buffer.front().unwrap() * mix);

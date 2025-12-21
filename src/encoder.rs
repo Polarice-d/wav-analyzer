@@ -13,12 +13,6 @@ pub fn encode_file(buffer:AudioBuffer, filename:PathBuf) {
     }
 
     match buffer.original_spec.bits_per_sample {
-       8 =>  {
-        let amplitude = i8::MAX as f32;
-        for sample in buffer.normalized_samples {
-            writer.write_sample((sample * amplitude) as i8).unwrap();
-        }
-       }
        16 => {
         let amplitude = i16::MAX as f32;
         for sample in buffer.normalized_samples {
