@@ -57,7 +57,15 @@ impl AudioEffect for Delay {
                 audio_buffer.samples.push((buffer.front().unwrap() * mix).clamp(-1.0, 1.0));
             }
         } else {
+            let mut prev_energy = f64::INFINITY;
             while normalizing_factor * square_sum > SQUARE_MIN_DELAY_ENERGY { 
+                let energy = normalizing_factor * square_sum;
+
+                if energy >= prev_energy { 
+                    break; // With feedback values close to 1, energy may asymptote just above the threshold due to floating point shenanigans, thus creating an infinite loop 
+                }
+                prev_energy = energy;
+
                 let front_val = *buffer.front().unwrap();
                 square_sum -= (front_val * front_val) as f64;
                 buffer.enqueue(front_val * feedback);

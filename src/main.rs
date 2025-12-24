@@ -6,6 +6,7 @@ mod effect_modules;
 
 use std::{collections::HashMap, path::PathBuf};
 use clap::{CommandFactory, Parser, error::ErrorKind};
+use std::time::Instant;
 
 use crate::types::AudioEffect;
 
@@ -42,6 +43,7 @@ fn add_effect<T: AudioEffect + 'static>(effect: T, effect_map: &mut HashMap<Stri
 }
 
 fn main() {
+    let time = Instant::now();
     let mut effect_map: HashMap<String, Box<dyn AudioEffect>> = HashMap::new();
 
     // HERE IS WHERE YOU ADD EFFECTS --> //
@@ -55,6 +57,11 @@ fn main() {
     let args = Args::parse();
     if args.output.is_some() && args.overwrite {
         error("Cannot use output (-o) and overwrite (--overwrite) at the same time".to_string(), ErrorKind::ArgumentConflict);
+        return;
+    }
+
+    if args.output.is_none() && !args.overwrite {
+        error("Must specify either output (-o) or overwrite (--overwrite)".to_string(), ErrorKind::MissingRequiredArgument);
         return;
     }
 
@@ -107,4 +114,6 @@ fn main() {
         return;
     }
     encoder::encode_file(buffer, args.output.unwrap());
+
+    println!("Total processing time: {:.2?}", time.elapsed());
 }
