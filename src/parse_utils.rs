@@ -43,3 +43,4 @@ pub fn parse_effects(input: &Vec<String>) -> Result<Vec<EffectSpec>, String> {
 
     return Ok(result);
 }
+

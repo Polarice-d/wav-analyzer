@@ -1,7 +1,7 @@
 mod encoder;
 mod decoder;
 mod types;
-mod effect_parser;
+mod parse_utils;
 mod effect_modules;
 
 use std::{collections::HashMap, path::PathBuf};
@@ -51,6 +51,7 @@ fn main() {
     add_effect(effect_modules::gain::Gain, &mut effect_map);
     add_effect(effect_modules::softclip::Softclip, &mut effect_map);
     add_effect(effect_modules::normalize::Normalize, &mut effect_map);
+    add_effect(effect_modules::eqband::EqBand, &mut effect_map);
 
     // <-- HERE IS WHERE YOU ADD EFFECTS//
 
@@ -65,7 +66,7 @@ fn main() {
         return;
     }
 
-    let effect_chain = match effect_parser::parse_effects(&args.effects) {
+    let effect_chain = match parse_utils::parse_effects(&args.effects) {
         Ok(v) => v,
         Err(message) => {
             error(message, ErrorKind::InvalidValue);
