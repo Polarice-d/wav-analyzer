@@ -1,4 +1,4 @@
-<p align="center"><img src="images/dark.png" alt="FIIS logo">
+<p align="center"><img src="assets/dark.png" alt="FIIS logo">
 
 ---
 **FIIS** (FFmpeg If It Sucked) is a minimal Rust-based command-line tool for simple digital signal processing. It supports audio effects like delay, gain, softclipping, etc.
@@ -26,10 +26,10 @@ fiis path/to/file.wav "delay:wet=1:fb=1.1:time=50" -t 0 --overwrite
 **Note:** the tool will encode the output file with the same spec as the input file (bit depth, sample format, sample rate).
 
 #### Before
-[Uploading showcase_a.wav…]()
+https://github.com/user-attachments/assets/09eb13b8-49a1-45b7-8d40-9fa9b4015f32
 
-#### After
-[Uploading showcase_b.wav…]()
+#### After `"delay:fb=0.3:time=425.87:wet=1"`
+https://github.com/user-attachments/assets/91d9a0f6-9c37-41c0-9daa-7dac91d8d0df
 
 ### Supported Effects
 | Name | Usage | Details |
