@@ -97,6 +97,8 @@ fn main() {
         }
     }
 
+    eprintln!("{}", format!("Reading file {:#?}", &args.file_path).bold());
+
     let mut buffer = match decoder::read_file(&args.file_path) {
         Ok(val) => val,
         Err(e) => {error(e, ErrorKind::Io); return;}
@@ -104,8 +106,7 @@ fn main() {
 
     let spec = &buffer.spec;
 
-    let message1 = format!("Reading file {:#?}", &args.file_path).bold();
-    let message2 = format!("   Sample rate: {},\n   Duration: {:},\n   Bit depth: {},\n   Sample format: {},\n   Channels: {}", 
+    let message = format!("   Sample rate: {},\n   Duration: {}s,\n   Bit depth: {},\n   Sample format: {},\n   Channels: {}", 
         spec.sample_rate.to_string().bright_blue(),
         format!("{:.2}", audio_utils::get_buffer_duration(&buffer)).bright_blue(),
         spec.bits_per_sample.to_string().bright_blue(),
@@ -113,7 +114,7 @@ fn main() {
         spec.channels.to_string().bright_blue()
     );
 
-    eprintln!("{message1}\n{message2}\n");
+    eprintln!("{message}\n");
 
     for effect_spec in effect_chain.iter() {
         let effect = effect_map.get(&effect_spec.name).unwrap();
