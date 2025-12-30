@@ -3,19 +3,19 @@
 ---
 **FIIS** (FFmpeg If It Sucked) is a minimal Rust-based command-line tool for simple digital signal processing. It supports audio effects like delay, gain, softclipping, etc.
 
-## Usage
+## Usage  
+**NOTE:** This tool is designed to be as permissive as possible. This means you can very easily make ear-blasting messes of noise and 10 hour long delay tails. Please be responsible. 
 ```bash
 fiis [OPTIONS] <FILE_PATH> [EFFECTS]...
 ```
-Effects are written as `"name:arg1=a:arg2=b..."`. a and b are numerical. The order of the arguments doesn't matter.
-
+Effects are written as `"name:arg1=a:arg2=b..."`, where a and b are numerical. All effect arguments are required.
 ### Examples
 
 Effects are applied in sequence from left to right.
 ```bash
-fiis path/to/file.wav "softclip:db=10" "peakingeq:db=-10:" "normalize" -o output.wav
+fiis path/to/file.wav "softclip:db=10" "peakingeq:db=-10" "normalize" -o output.wav
 ```
-This will edit the original file.
+This will modify the original file.
 ```bash
 fiis path/to/file.wav "gain:db=10" --overwrite
 ```
@@ -37,7 +37,7 @@ https://github.com/user-attachments/assets/91d9a0f6-9c37-41c0-9daa-7dac91d8d0df
 |**Gain**| `gain:db=x` | Scales the amplitude by `x` dB.|
 |**Softclip**| `softclip:db=x`| Applies `x` dB of drive followed by standard `tanh` waveshaping. |
 |**Normalize**| `normalize` | Performs peak normalization to 0 dB. Useful for preventing clipping.|
-|**Delay**    | `delay:wet=w:fb=y:time=z` | Adds `x`% of wet signal. Feedback specifies the energy scaling `y` on each echo. Time specifies the time between echoes in `z` miliseconds. For feedback values >= 1, the `--tail` option is required. The default maximum tail length is 1 hour. If (for some reason) you want a longer tail you can do so with the `--tail` option. I'm not responsible for out-of-memory crashes.|
+|**Delay**    | `delay:wet=w:fb=y:time=z` | Adds `x`% of wet signal. Feedback specifies the energy scaling `y` on each echo. Time specifies the time between echoes in `z` miliseconds. For feedback values >= 1, the `--tail` option is required to avoid infinite loops. The default maximum tail length is 1 hour. If (for some reason) you want a longer tail you can do so with the `--tail` option. I'm not responsible for out-of-memory crashes.|
 |**Peaking EQ** | `peakingeq:db=x:bw=y:freq=z` | Applies a peaking EQ filter with gain `x` across `y` octaves centered at frequency `z`.|
 |**Low Shelf and High Shelf EQ** | `lshelfeq/hshelfeq:db=x:s=y:freq=z` | Applies a low/high shelf EQ filter with gain `x` with 'steepness' `y` centered at frequency `z`.|
 |**Bandpass EQ** | `bandpasseq:q=x:freq=y` | Applies a bandpass EQ filter at center frequency `y` with 'precision' `x`. |
@@ -49,7 +49,6 @@ https://github.com/user-attachments/assets/91d9a0f6-9c37-41c0-9daa-7dac91d8d0df
 - Options to change final sample rate, bit depth, and sample format
 
 The tool is highly modular, so feel free to make your own effects!
-
 
 ## Build from source
 Make sure you have `cargo` and `git` installed.
